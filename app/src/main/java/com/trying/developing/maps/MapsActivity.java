@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -82,7 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (DataSnapshot dataSnapshot1 :dataSnapshot.getChildren()){
                     ApartmentModel model = dataSnapshot1.getValue(ApartmentModel.class);
                     LatLng loaction = new LatLng(model.lat,model.lng);
-                    mMap.addMarker(new MarkerOptions().position(loaction).title(address));
+                    mMap.addMarker(new MarkerOptions().position(loaction).title(model.getSize()));
 
 
                 }
@@ -134,17 +135,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
 
-                databaseReference.push().setValue(new ApartmentModel(lat,lng ,size.getText().toString(),dexc.getText().toString(),address));
-                mMap.addMarker(new MarkerOptions().position(latLng).title(address));
+                if(TextUtils.isEmpty(size.getText())&&TextUtils.isEmpty(dexc.getText())){
 
-                dialog.dismiss();
+                 dialog.cancel();
+
+                }else {
+
+                    databaseReference.push().setValue(new ApartmentModel(lat, lng, size.getText().toString(), dexc.getText().toString(), address));
+                    mMap.addMarker(new MarkerOptions().position(latLng).title(size.getText().toString()));
+
+                    dialog.dismiss();
+                }
             }
+
         });
 
 
 
 
-
+        dialog.setCanceledOnTouchOutside(true);
 
 
 
